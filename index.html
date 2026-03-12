@@ -310,6 +310,11 @@
     display: inline-block;
     margin-bottom: 24px;
   }
+  /* Make buttons look better together */
+  .hint-btn {
+    padding: 10px 15px;
+    font-size: 1rem;
+  }
   .photo-frame::before {
     content: '';
     position: absolute;
@@ -406,7 +411,10 @@
         <input class="answer-input" id="answerInput" type="text" placeholder="Type your answer..." autocomplete="off" autocorrect="off" spellcheck="false">
       </div>
 
-      <button class="hint-btn" id="hintBtn">💡 Use a Hint</button>
+      <div style="display: flex; gap: 10px; width: 100%;">
+      <button class="hint-btn" id="hintBtn" style="flex: 1;">💡 Hint</button>
+      <button class="hint-btn" id="shuffleBtn" style="flex: 1;">🔀 Shuffle</button>
+    </div>
     </div>
   </div>
 
@@ -465,6 +473,7 @@
       you how much you matter.<br><br>
       So here’s to a new year of your life — one that meets<br>
       you with kindness, and gives more than it takes.<br><br>
+     
       Happy Birthday.<br>
       You deserve a beautiful day.<br><br>
       xoxo 🐰🦊❤️ <br>
@@ -585,6 +594,23 @@ document.getElementById('hintBtn').addEventListener('click', () => {
   revealedCount++;
   renderScrambleWithHints(answer, revealedCount);
   startHintCooldown();
+});
+// ── Shuffle Logic ──
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+    const wrap = document.getElementById('scrambleWrap');
+    const tiles = Array.from(wrap.querySelectorAll('.letter-tile:not(.revealed):not(.dash)'));
+    
+    // Shuffle the non-revealed tiles
+    for (let i = tiles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = tiles[i].textContent;
+        tiles[i].textContent = tiles[j].textContent;
+        tiles[j].textContent = temp;
+    }
+    
+    // Tiny bounce animation to show it shuffled
+    wrap.style.transform = 'scale(0.95)';
+    setTimeout(() => wrap.style.transform = 'scale(1)', 100);
 });
 
 function renderScrambleWithHints(answer, revealed) {
