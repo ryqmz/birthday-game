@@ -383,7 +383,9 @@
 </style>
 </head>
 <body>
-
+<audio id="bdayMusic" loop>
+  <source src="background-music.mp3" type="audio/mpeg">
+</audio>
 <!-- Floating hearts -->
 <div class="hearts-bg" id="heartsBg"></div>
 
@@ -707,12 +709,41 @@ function showScreen(id) {
 function openGift() {
   showScreen('videoScreen');
   const v = document.getElementById('bdayVideo');
-  v.play().catch(() => {});
+  
+  // Start at 0 volume
+  v.volume = 0;
+  
+  v.play().then(() => {
+    // Quick 1-second fade in for the video
+    let videoFade = setInterval(() => {
+      if (v.volume < 1) {
+        v.volume = Math.min(v.volume + 0.1, 1);
+      } else {
+        clearInterval(videoFade);
+      }
+    }, 100); // Increases volume every 100ms
+  }).catch((err) => {
+    console.log("Video autoplay blocked, waiting for interaction", err);
+  });
+
   v.addEventListener('ended', showBirthdayCard, { once: true });
 }
 
 function showBirthdayCard() {
   showScreen('cardScreen');
+  // Play the background music
+  const music = document.getElementById('bdayMusic');
+  music.volume = 0; // Start at zero volume
+  music.play().then(() => {
+    // Fade in over 2 seconds (0.05 increase every 200ms)
+    let fadeAudio = setInterval(() => {
+      if (music.volume < 0.5) {
+        music.volume = Math.min(music.volume + 0.05, 0.5);
+      } else {
+        clearInterval(fadeAudio);
+      }
+    }, 200);
+  }).catch(err => console.log("Music blocked by browser:", err));
   // Extra hearts burst
   for (let i = 0; i < 20; i++) setTimeout(spawnHeart, i * 100);
 }
